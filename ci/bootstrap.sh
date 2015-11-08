@@ -11,6 +11,13 @@ if [ ! -d vendor ] ; then mkdir vendor; fi
 if [ ! -d vendor ] ; then mkdir vendor/bin; fi
 if [ ! -d vendor ] ; then mkdir vendor/cache; fi
 
+# Sudo is necessary for this setup.
+
+if $(sudo sh -c true; echo $0) -ne "0"; then
+  echo "ERROR: User needs to be able to sudo"
+  exit 1
+fi
+
 # we need unzip
 if ! which unzip; then
   # redhat
@@ -20,8 +27,12 @@ if ! which unzip; then
     sudo apt-get install unzip
   else
     echo "ERROR: unzip not found and cannot install"
+    exit 0
   fi
 fi
+
+# We also need ChefDK
+curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk
 
 wget -O vendor/cache/$PACKER_ZIP $PACKER_URL/$PACKER_VER/PACKER_ZIP
 pushd vendor/cache
