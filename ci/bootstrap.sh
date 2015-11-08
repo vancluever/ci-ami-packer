@@ -33,6 +33,8 @@ fi
 
 # We also need ChefDK
 curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk
+# Chef gems
+sudo chef gem install --no-user-install ubuntu_ami
 
 wget -O vendor/cache/$PACKER_ZIP $PACKER_URL/$PACKER_VER/PACKER_ZIP
 pushd vendor/cache

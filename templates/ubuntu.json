@@ -1,0 +1,24 @@
+{
+  "variables": {
+    "distro": "{{env `DISTRO`}}",
+    "src_ami": "{{env `SRC_AMI`}}",
+    "src_region": "{{env `SRC_REGION`}}"
+  },
+  "builders": [
+    {
+      "type": "amazon-ebs",
+      "ami_name": "ci-ami - Ubuntu {{user `distro`}} - {{timestamp}}",
+      "instance_type": "t2.micro",
+      "region": "{{user `src_region`}}",
+      "source_ami": "{{user `src_ami`}}",
+      "ssh_username": "ubuntu"
+    }
+  ],
+
+  "provisioners": [
+    {
+      "type": "chef-solo",
+      "cookbook_paths": ["cookbooks"]
+    }
+  ]
+}
