@@ -8,6 +8,6 @@ version          '1.0.0'
 
 depends 'apt'
 depends 'java'
-depends 'buid-essential'
+depends 'build-essential'
 depends 'poise-ruby'
 depends 'poise-python'
