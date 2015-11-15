@@ -4,7 +4,10 @@ packer_cache/
 # For built boxes
 *.box
 
-# for packer binaries:
-# - vendor/bin is where packer binaries will lie
-# - vendor/cache is where the packer ZIP will be downloaded to
+# packer binaries and bundler artifacts
 vendor/
+.bundle
+bin/
+berks-cookbooks/
+Gemfile.lock
+Berksfile.lock
