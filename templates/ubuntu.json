@@ -18,7 +18,8 @@
   "provisioners": [
     {
       "type": "chef-solo",
-      "cookbook_paths": ["cookbooks"]
+      "cookbook_paths": ["berks-cookbooks"],
+      "run_list": ["packer-payload"]
     }
   ]
 }
