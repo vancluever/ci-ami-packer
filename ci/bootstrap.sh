@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash -xe
 
 PACKER_URL="https://releases.hashicorp.com/packer"
 PACKER_VER="0.8.6"
@@ -8,37 +8,22 @@ PACKER_ZIP="packer_${PACKER_VER}_linux_amd64.zip"
 cd "$(dirname $0)/../"
 
 if [ ! -d vendor ] ; then mkdir vendor; fi
-if [ ! -d vendor ] ; then mkdir vendor/bin; fi
-if [ ! -d vendor ] ; then mkdir vendor/cache; fi
-
-# Sudo is necessary for this setup.
-
-if $(sudo sh -c true; echo $0) -ne "0"; then
-  echo "ERROR: User needs to be able to sudo"
-  exit 1
-fi
+if [ ! -d vendor/bin ] ; then mkdir vendor/bin; fi
+if [ ! -d vendor/cache ] ; then mkdir vendor/cache; fi
 
 # we need unzip
 if ! which unzip; then
-  # redhat
-  if which yum ; then
-    sudo yum install unzip
-  elif which apt-get ; then
-    sudo apt-get install unzip
-  else
-    echo "ERROR: unzip not found and cannot install"
-    exit 0
-  fi
+  echo "ERROR: unzip not found"
+  exit 0
 fi
 
-# We also need ChefDK
-curl https://omnitruck.chef.io/install.sh | sudo bash -s -- -c current -P chefdk
-# Chef gems
-sudo chef gem install --no-user-install ubuntu_ami
+# bundler needs to be installed if it's not already on the box
+if ! which bundle; then gem install bundler ; fi
+# Install any gems we need gracefully into vendor with bundler
+bundle install --binstubs --path vendor --retry 3
 
-wget -O vendor/cache/$PACKER_ZIP $PACKER_URL/$PACKER_VER/PACKER_ZIP
-pushd vendor/cache
-echo "$PACKER_SUM  $PACKER_ZIP" | shasum -c
-popd
-
-unzip vendor/cache/$PACKER_ZIP -d vendor/bin/
+if [ "$(echo "$PACKER_SUM  vendor/cache/$PACKER_ZIP" | shasum -c > /dev/null ; echo $?)" -ne "0" ] ; then
+  wget -O "vendor/cache/$PACKER_ZIP" "$PACKER_URL/$PACKER_VER/$PACKER_ZIP"
+  echo "$PACKER_SUM  vendor/cache/$PACKER_ZIP" | shasum -c
+  unzip -o "vendor/cache/$PACKER_ZIP" -d vendor/bin/
+fi
